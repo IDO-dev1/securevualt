@@ -1,19 +1,11 @@
 """
-SecureVault — Cryptographic core
-Built by Ido
-
-Features:
-  • AES-256-GCM encryption
-  • Argon2id key derivation
-  • Encrypted backups
-  • Tamper detection
-  • Secure local password vault
-
+vault_core.py — Cryptographic core for SecureVault 
+built by Ido
 Fixed issues from original:
-  1. save() now correctly writes the real salt
-  2. Backup uses separate encrypted nonce
-  3. Argon2id used directly (no SHA256 wrapper)
-  4. Sensitive passwords cleared from memory where possible
+  1. save() now correctly writes the real salt (not master_key bytes)
+  2. Backup is encrypted with a separate nonce, not raw key material
+  3. Key derivation uses Argon2id directly via argon2-cffi (no SHA256 wrapper)
+  4. Passwords are cleared from memory after use where possible
 """
 
 import os
@@ -26,15 +18,14 @@ from argon2.low_level import hash_secret_raw, Type
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 
-SALT_LEN   = 32   # bytes
-NONCE_LEN  = 12   # bytes (96-bit for AES-GCM)
-FILE_MAGIC = b"SV1"  # 3-byte magic for version detection
+SALT_LEN   = 32  
+NONCE_LEN  = 12  
+FILE_MAGIC = b"SV1"  
 
-# Argon2id parameters (OWASP recommended minimums for passwords)
 ARGON2_TIME_COST   = 3
-ARGON2_MEMORY_COST = 65536  # 64 MB
+ARGON2_MEMORY_COST = 65536 
 ARGON2_PARALLELISM = 4
-ARGON2_HASH_LEN    = 32     # → AES-256 key
+ARGON2_HASH_LEN    = 32   
 
 VAULT_VERSION = 1
 
@@ -61,7 +52,6 @@ def derive_key(password: str, salt: bytes) -> bytes:
         hash_len=ARGON2_HASH_LEN,
         type=Type.ID,
     )
-    # Attempt to zero the password bytes from Python memory (best-effort)
     pw_ba = bytearray(raw_pw)
     _zero_bytes(pw_ba)
     return key
