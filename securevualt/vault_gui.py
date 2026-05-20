@@ -1,8 +1,7 @@
 """
-SecureVault
-Encrypted local password manager
-
-Built by Ido
+vault_gui.py — Main GUI for SecureVault
+built by Ido
+Dark, minimal, production-ready interface using tkinter (ships with Python).
 """
 
 import tkinter as tk
@@ -64,7 +63,6 @@ class LoginWindow(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("SecureVault")
-        self.iconbitmap(r"C:\Users\User\Desktop\securevualt\icon.ico")
         self.configure(bg=BG)
         self.resizable(False, False)
         self._center(400, 360)
@@ -167,7 +165,6 @@ class MainWindow(tk.Toplevel):
         self.geometry(f"{w}x{h}+{(sw-w)//2}+{(sh-h)//2}")
 
     def _build(self):
-        # ── Sidebar ──────────────────────────────────────────────────────────
         sidebar = tk.Frame(self, bg=BG2, width=220)
         sidebar.pack(side="left", fill="y")
         sidebar.pack_propagate(False)
@@ -175,7 +172,6 @@ class MainWindow(tk.Toplevel):
         tk.Label(sidebar, text="🔐  SecureVault", font=FONT_HEADER,
                  bg=BG2, fg=TEXT).pack(padx=16, pady=(20, 12), anchor="w")
 
-        # Search
         tk.Label(sidebar, text="Search", font=FONT_SMALL,
                  bg=BG2, fg=SUBTEXT).pack(padx=16, anchor="w")
         self.search_var = tk.StringVar()
@@ -183,7 +179,6 @@ class MainWindow(tk.Toplevel):
         search = styled_entry(sidebar, textvariable=self.search_var)
         search.pack(fill="x", padx=16, pady=(4, 12), ipady=6)
 
-        # List
         list_frame = tk.Frame(sidebar, bg=BG2)
         list_frame.pack(fill="both", expand=True, padx=8)
 
@@ -200,7 +195,6 @@ class MainWindow(tk.Toplevel):
         self.service_list.pack(fill="both", expand=True)
         self.service_list.bind("<<ListboxSelect>>", self._on_select)
 
-        # Sidebar buttons
         btn_frame = tk.Frame(sidebar, bg=BG2)
         btn_frame.pack(fill="x", padx=8, pady=12)
         styled_button(btn_frame, "+ Add Entry", self._show_add_form).pack(
@@ -329,7 +323,6 @@ class MainWindow(tk.Toplevel):
         form_row("Notes", "notes")
         form_row("TOTP Secret", "totp_secret", show="•")
 
-        # Password generator
         gen_row = tk.Frame(self.detail, bg=BG)
         gen_row.pack(fill="x", padx=32, pady=(0, 12))
         tk.Label(gen_row, text="", width=12, bg=BG).pack(side="left")
@@ -421,6 +414,7 @@ class MainWindow(tk.Toplevel):
         self.vault.lock()
         self.login_win.destroy()
         self.destroy()
+
 
 
 if __name__ == "__main__":
